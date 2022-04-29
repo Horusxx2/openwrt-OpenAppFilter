@@ -1,14 +1,15 @@
 
 local ds = require "luci.dispatcher"
+local utl = require "luci.util"
 
 local m, s
 
 m = Map("appfilter",
-	translate("appfilter"),
+	translate("应用过滤&恶意域名过滤"),
 	translate(""))
 	
 s = m:section(TypedSection, "global", translate("Basic Settings"))
-s:option(Flag, "enable", translate("Enable App Filter"),translate(""))
+s:option(Flag, "enable", translate("开启"),translate(""))
 s.anonymous = true
 
 
@@ -29,6 +30,7 @@ if class_fd then
 		
 		class = path:match("([^/]+)%.class$")
 		-- add a tab
+		if class ~= "blackwebsite" then
 		s:tab(class, translate(class))
 		-- multi value option
 		apps = s:taboption(class, MultiValue, class.."apps", translate(""))
@@ -36,7 +38,7 @@ if class_fd then
 		--apps.delimiter=";"
 		-- select 
 		apps.widget="checkbox"
-		apps.size=12
+		apps.size=10
 
 		local fd = io.open(path)
 		if fd then
@@ -64,6 +66,7 @@ if class_fd then
 				end
 			end
 			fd:close()
+		end
 		end
 	end
 	class_fd:close()
@@ -108,7 +111,7 @@ users.widget="checkbox"
 users.size=1
 
 local fd = io.open("/proc/net/arp", "r")
-if not fd then return end
+if not fd then return m end
 while true do
 	local line = fd:read("*l")
 	if not line then
@@ -129,6 +132,14 @@ while true do
 	end
 end
 
+local config_users=m.uci:get_all("appfilter.user.users")
+if config_users~=nil then
+local r=utl.split(config_users, "%s+", nil, true)
+local max = table.getn(r)
+for i=1,max,1 do
+	users:value(r[i], r[i]);
+end
+end
 m:section(SimpleSection).template = "admin_network/user_status"
 
 
