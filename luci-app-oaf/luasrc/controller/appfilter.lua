@@ -12,6 +12,9 @@ function index()
 	
 	page = entry({"admin", "network", "user_status"}, call("user_status"), nil)
 	page.leaf = true
+	
+	page = entry({"admin", "network", "feature_upgrade"}, call("handle_feature_upgrade"), nil)
+	page.leaf = true
 end
 
 function get_hostname_by_mac(dst_mac)
@@ -31,6 +34,29 @@ function get_hostname_by_mac(dst_mac)
     end
 	fd:close()
     return ""
+end
+
+function handle_feature_upgrade()
+	local fs = require "nixio.fs"
+	local http = require "luci.http"
+	local image_tmp = "/tmp/feature.cfg"
+
+	local fp
+	http.setfilehandler(
+		function(meta, chunk, eof)
+	
+			fp = io.open(image_tmp, "w")
+			
+			if fp and chunk then
+				fp:write(chunk)
+			end
+			if fp and eof then
+				fp:close()
+			end
+		end
+	)
+
+
 end
 
 function get_app_name_by_id(appid)
