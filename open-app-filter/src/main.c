@@ -25,8 +25,6 @@ THE SOFTWARE.
 #include <libubox/uloop.h>
 #include <libubox/utils.h>
 #include <libubus.h>
-#include "appfilter_user.h"
-#include "appfilter_netlink.h"
 #include "appfilter_ubus.h"
 #include "appfilter_config.h"
 #include <time.h>
