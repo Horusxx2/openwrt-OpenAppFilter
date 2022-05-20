@@ -49,6 +49,8 @@ table.imagetable td {
 					else{
 						hostname=st[i].hostname;
 					}
+					if(appname == "blackwebsite")
+					{
 					var tr = tb.insertRow(-1);
 					//tr.className = 'cbi-section-table-row cbi-rowstyle-' + ((i % 2) + 1);
 					tr.insertCell(-1).innerHTML = hostname;
@@ -59,6 +61,7 @@ table.imagetable td {
 					tr.insertCell(-1).innerHTML = st[i].total_num;
 					tr.insertCell(-1).innerHTML = st[i].latest_time;
 					tr.insertCell(-1).innerHTML = action_status;
+					}
 				}
 			}
 		}
