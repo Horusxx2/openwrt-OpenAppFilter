@@ -13,6 +13,9 @@ function index()
 	page = entry({"admin", "network", "user_status"}, call("user_status"), nil)
 	page.leaf = true
 	
+	page = entry({"admin", "network", "evil_status"}, call("evil_status"), nil)
+	page.leaf = true
+	
 	page = entry({"admin", "network", "feature_upgrade"}, call("handle_feature_upgrade"), nil)
 	page.leaf = true
 end
@@ -75,6 +78,41 @@ end
 
 
 
+
+function user_status()
+	local json = require "luci.jsonc"
+	luci.http.prepare_content("application/json")
+	--local fs=require "nixio.fs"
+	--local ok, status_data = pcall(json.parse, fs.readfile("/proc/net/af_client"))
+	--luci.http.write_json(tb);
+	local fd = io.open("/proc/net/af_client","r")
+	
+	status_buf=fd:read('*a')
+	fd:close()
+	user_array=json.parse(status_buf)
+	
+	local history={}
+	for i, v in pairs(user_array) do
+		visit_array=user_array[i].visit_info
+		for j,s in pairs(visit_array) do
+			print(user_array[i].mac, user_array[i].ip,visit_array[j].appid, visit_array[j].latest_time)
+			history[#history+1]={
+				mac=user_array[i].mac,
+				ip=user_array[i].ip,
+				hostname=get_hostname_by_mac(user_array[i].mac),
+				appid=visit_array[j].appid,
+				appname=get_app_name_by_id(visit_array[j].appid),
+				total_num=visit_array[j].total_num,
+				drop_num=visit_array[j].drop_num,
+				latest_action=visit_array[j].latest_action,
+				latest_time=os.date("%Y/%m/%d %H:%M:%S", visit_array[j].latest_time)
+			}
+		end
+	end
+	table.sort(history, cmp_func)
+	--luci.http.write(history);
+	luci.http.write_json(history);
+end
 
 function user_status()
 	local json = require "luci.jsonc"
