@@ -161,6 +161,8 @@ um = s:option(DummyValue, "rule_data")
 
 m:section(SimpleSection).template = "admin_network/user_status"
 
+m:section(SimpleSection).template = "admin_network/evil_status"
+
 local dir, fd
 dir = "/tmp/upload/"
 nixio.fs.mkdir(dir)
