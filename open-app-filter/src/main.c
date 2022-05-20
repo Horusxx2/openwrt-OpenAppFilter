@@ -79,11 +79,6 @@ EXIT:
 
 void dev_list_timeout_handler(struct uloop_timeout *t)
 {
-    
-    dump_dev_list();
-    check_dev_visit_info_expire();
-    flush_expire_visit_info();
-    //dump_dev_visit_list();
     check_appfilter_enable();
     //todo: dev list expire
     uloop_timeout_set(t, 10000);
@@ -92,29 +87,17 @@ void dev_list_timeout_handler(struct uloop_timeout *t)
 struct uloop_timeout dev_tm = {
     .cb = dev_list_timeout_handler};
 
-static struct uloop_fd appfilter_nl_fd = {
-    .cb = appfilter_nl_handler,
-};
 
 int main(int argc, char **argv)
 {
     int ret = 0;
     uloop_init();
     printf("init appfilter\n");
-    init_dev_node_htable();
-    init_app_name_table();
-    init_app_class_name_table();
     if (appfilter_ubus_init() < 0)
     {
         fprintf(stderr, "Failed to connect to ubus\n");
         return 1;
     }
-
-    appfilter_nl_fd.fd = appfilter_nl_init();
-    uloop_fd_add(&appfilter_nl_fd, ULOOP_READ);
-    af_msg_t msg;
-    msg.action = AF_MSG_INIT;
-    send_msg_to_kernel(appfilter_nl_fd.fd, (void *)&msg, sizeof(msg));
     uloop_timeout_set(&dev_tm, 5000);
     uloop_timeout_add(&dev_tm);
     uloop_run();
