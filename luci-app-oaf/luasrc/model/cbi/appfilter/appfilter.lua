@@ -158,19 +158,6 @@ s.anonymous = true
 
 um = s:option(DummyValue, "rule_data")
 
-s=m:section(TypedSection,"time",translate("Time Setting")) s.anonymous = true
-hv = s:option(Value, "start_time", translate("Start Time")) hv.default="00:00"
-hv.optional=false
-hv = s:option(Value, "end_time", translate("End Time")) hv.default="23:59"
-hv.optional=false days = s:option(MultiValue, "days", "", translate("")) 
-days.widget="checkbox" days.size=10 
-days:value("0", translate("Sun"));
-days:value("1", translate("Mon")); 
-days:value("2", translate("Tue"));
-days:value("3", translate("Wed")); 
-days:value("4", translate("Thur")); 
-days:value("5", translate("Fri")); 
-days:value("6", translate("Sat")); 
 
 m:section(SimpleSection).template = "admin_network/user_status"
 
